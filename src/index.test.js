@@ -1,29 +1,24 @@
-import { useMyHook } from './'
+import { useObjectState } from './';
 import { renderHook, act } from "@testing-library/react-hooks";
 
 // mock timer using jest
 jest.useFakeTimers();
 
-describe('useMyHook', () => {
-  it('updates every second', () => {
-    const { result } = renderHook(() => useMyHook());
-
-    expect(result.current).toBe(0);
-
-    // Fast-forward 1sec
-    act(() => {
-      jest.advanceTimersByTime(1000);
-    });
-
-    // Check after total 1 sec
-    expect(result.current).toBe(1);
-
-    // Fast-forward 1 more sec
-    act(() => {
-      jest.advanceTimersByTime(1000);
-    });
-
-    // Check after total 2 sec
-    expect(result.current).toBe(2);
+describe('useObjectState', () => {
+  it('only updates name', () => {
+    const initial = {
+      name : "Initial Name",
+      number : 12
+    };
+    const { result } = renderHook(() => useObjectState(initial));
+    const [state, updateState] = result.current;
+    expect(state.name).toBe(initial.name);
+    const newState = {
+      name: "New name"
+    };
+    act( () => updateState(newState));
+    const [alteredState, _] = result.current;
+    expect(alteredState.name).toBe(newState.name);
+    expect(alteredState.number).toBe(initial.number);
   })
 })
